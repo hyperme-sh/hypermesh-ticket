@@ -1,0 +1,16 @@
+{
+  "repository": "FyberLabs/hypermesh-ticket",
+  "source_repository": "FyberLabs/panopticon",
+  "source_revision": "2d92d13f38d491c298631b9b9296979c1fbadd19",
+  "selected_paths": [
+    "products/hypermesh-ticket"
+  ],
+  "filtered_history_head": "272b22caf2013fd06364f0a6ec9d43139a41183b",
+  "retained_files": 8,
+  "inventory_sha256": "876df5f06fdc5f5422e007991c8ca724bf6e1ac19a88f30fdc2857baf1904e4b",
+  "blob_and_mode_equality_verified": true,
+  "rename_predecessors_followed": false,
+  "standalone_release_verified": false,
+  "cutover_verified": false,
+  "actions_enabled": false
+}

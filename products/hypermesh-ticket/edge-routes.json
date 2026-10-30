@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "product": "hypermesh-ticket",
+  "edge_routes": [],
+  "exposure": "Library package; no HTTP routes."
+}

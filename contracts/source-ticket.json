@@ -1,0 +1,393 @@
+{
+  "import_name": "hypermesh_ticket",
+  "modules": {
+    "hypermesh_ticket": {
+      "INSTANCE_NOT_READY": {
+        "annotation": null,
+        "default": "a609dff45a99fcf13867e4a3d915f310846e530172261e6772cf4878a94a7cb4",
+        "kind": "attribute"
+      },
+      "IR_CHAT_PURPOSES": {
+        "annotation": null,
+        "default": "fa2879829d4bd1cf24acfddf301600c6bd27cb9ff754599e19601f9f7754298d",
+        "kind": "attribute"
+      },
+      "KEY_MINT_PURPOSES": {
+        "annotation": null,
+        "default": "d82ca5bfe02fbb6c056c8c7f549d7d66cb05c8d1324cda98b953d566ca6481cb",
+        "kind": "attribute"
+      },
+      "KeyMintPurpose": {
+        "annotation": null,
+        "default": "d5bda88005a069b71d661bb6a960b1af5d53a61f4640fdd526463bd220e88d04",
+        "kind": "attribute"
+      },
+      "RENTER_CHAT_PURPOSES": {
+        "annotation": null,
+        "default": "9fd80b1bc55504cc7102cba37ad727652792fb19189fbd722261112e51fae6bb",
+        "kind": "attribute"
+      },
+      "TICKET_DEV_ENV": {
+        "annotation": null,
+        "default": "f510f0b54aa12e25b2f6ba4406f79e0ea0f0959dafd222243caedd750090d77c",
+        "kind": "attribute"
+      },
+      "TICKET_HMAC_ENV": {
+        "annotation": null,
+        "default": "91d627a2e7815632e42cfa3074626374686b721d45e777edfeedc88e1f940b54",
+        "kind": "attribute"
+      },
+      "TICKET_PREFIX": {
+        "annotation": null,
+        "default": "fcd14fd5c501158fbb1587b6688815c858c41622c8fd2ae482e6b3c2f1271185",
+        "kind": "attribute"
+      },
+      "TICKET_PURPOSES": {
+        "annotation": null,
+        "default": "d82ca5bfe02fbb6c056c8c7f549d7d66cb05c8d1324cda98b953d566ca6481cb",
+        "kind": "attribute"
+      },
+      "TICKET_PURPOSE_IR": {
+        "annotation": null,
+        "default": "43aa97462820cdb8297ca7c83b2250ae8cc02af749f9609879516f67000786f5",
+        "kind": "attribute"
+      },
+      "TICKET_PURPOSE_RENTER": {
+        "annotation": null,
+        "default": "85af317ca9973686be3335248330c6fe97395982d090ad8435ce4ed4c3e74de4",
+        "kind": "attribute"
+      },
+      "TICKET_PURPOSE_SERVICE": {
+        "annotation": null,
+        "default": "5a76c2f04bd3856b3715370bcbbc7c8b3b22f1bc0d029df310adde36e68fa559",
+        "kind": "attribute"
+      },
+      "TICKET_STATUS_ACTIVE": {
+        "annotation": null,
+        "default": "170c97a025dcfcc09e9f90fe11aef541d11f6f55e1f604d38a97cc949ba20a1c",
+        "kind": "attribute"
+      },
+      "TICKET_VERSION": {
+        "annotation": null,
+        "default": "ce13a8599ff90efbda30c09ee35628d67482885d7ffcf2212560d7206d5d1374",
+        "kind": "attribute"
+      },
+      "TicketClaims": {
+        "bases": [],
+        "decorators": [
+          "222adf1e9de2fca86013c4c3166e9d7b4f44f14fff01531f7a30489ce24d29b5"
+        ],
+        "kind": "class",
+        "members": {
+          "chat_upstream": {
+            "decorators": [],
+            "kind": "function",
+            "parameters": [
+              {
+                "annotation": null,
+                "default": null,
+                "kind": "positional",
+                "name": "self"
+              }
+            ],
+            "returns": "str"
+          },
+          "client_address": {
+            "annotation": "str",
+            "default": null,
+            "kind": "attribute"
+          },
+          "contract_id": {
+            "annotation": "uuid.UUID | None",
+            "default": "9284468224b1c3c93e7ba3377065c6230aeb41b3b91844010564bcfbffc48e70",
+            "kind": "attribute"
+          },
+          "device_id": {
+            "annotation": "uuid.UUID",
+            "default": null,
+            "kind": "attribute"
+          },
+          "exp": {
+            "annotation": "datetime",
+            "default": null,
+            "kind": "attribute"
+          },
+          "gateway_id": {
+            "annotation": "uuid.UUID",
+            "default": null,
+            "kind": "attribute"
+          },
+          "lease_id": {
+            "annotation": "uuid.UUID",
+            "default": null,
+            "kind": "attribute"
+          },
+          "purpose": {
+            "annotation": "str",
+            "default": "1c25710dc6c5e4e5cbb3934841a4072dcdf398a57aaeec49db3c66c2829bf9aa",
+            "kind": "attribute"
+          },
+          "status": {
+            "annotation": "str",
+            "default": null,
+            "kind": "attribute"
+          },
+          "tenant_id": {
+            "annotation": "uuid.UUID | None",
+            "default": "9284468224b1c3c93e7ba3377065c6230aeb41b3b91844010564bcfbffc48e70",
+            "kind": "attribute"
+          }
+        }
+      },
+      "TicketError": {
+        "bases": [
+          "Exception"
+        ],
+        "decorators": [],
+        "kind": "class",
+        "members": {
+          "__init__": {
+            "decorators": [],
+            "kind": "function",
+            "parameters": [
+              {
+                "annotation": null,
+                "default": null,
+                "kind": "positional",
+                "name": "self"
+              },
+              {
+                "annotation": "str",
+                "default": null,
+                "kind": "positional",
+                "name": "reason"
+              }
+            ],
+            "returns": "None"
+          }
+        }
+      },
+      "TicketNotReady": {
+        "bases": [
+          "Exception"
+        ],
+        "decorators": [],
+        "kind": "class",
+        "members": {
+          "__init__": {
+            "decorators": [],
+            "kind": "function",
+            "parameters": [
+              {
+                "annotation": null,
+                "default": null,
+                "kind": "positional",
+                "name": "self"
+              }
+            ],
+            "returns": "None"
+          },
+          "detail": {
+            "annotation": null,
+            "default": "e53d9f45fe7adfc11c75b4dab748bf49ba3f1623bb3edf521ba68be83c7f663e",
+            "kind": "attribute"
+          },
+          "status_code": {
+            "annotation": null,
+            "default": "a57185c4f4b28657dbf51cdd61c1fd07b2661b02ba758b31afc6042bc9dc4001",
+            "kind": "attribute"
+          }
+        }
+      },
+      "TicketPurpose": {
+        "annotation": null,
+        "default": "d5bda88005a069b71d661bb6a960b1af5d53a61f4640fdd526463bd220e88d04",
+        "kind": "attribute"
+      },
+      "honor_ticket": {
+        "decorators": [],
+        "kind": "function",
+        "parameters": [
+          {
+            "annotation": "str",
+            "default": null,
+            "kind": "positional",
+            "name": "token"
+          },
+          {
+            "annotation": "uuid.UUID",
+            "default": null,
+            "kind": "keyword-only",
+            "name": "gateway_id"
+          },
+          {
+            "annotation": "datetime | None",
+            "default": "9284468224b1c3c93e7ba3377065c6230aeb41b3b91844010564bcfbffc48e70",
+            "kind": "keyword-only",
+            "name": "now"
+          },
+          {
+            "annotation": "Collection[uuid.UUID] | Iterable[uuid.UUID]",
+            "default": "53158a46832262834168e0bb8fb844b59e1f68cf8443d96d1df373dfb5f1999a",
+            "kind": "keyword-only",
+            "name": "revoked_lease_ids"
+          },
+          {
+            "annotation": "bytes | None",
+            "default": "9284468224b1c3c93e7ba3377065c6230aeb41b3b91844010564bcfbffc48e70",
+            "kind": "keyword-only",
+            "name": "key"
+          }
+        ],
+        "returns": "TicketClaims"
+      },
+      "issue_ticket": {
+        "decorators": [],
+        "kind": "function",
+        "parameters": [
+          {
+            "annotation": "TicketClaims",
+            "default": null,
+            "kind": "positional",
+            "name": "claims"
+          },
+          {
+            "annotation": "bytes | None",
+            "default": "9284468224b1c3c93e7ba3377065c6230aeb41b3b91844010564bcfbffc48e70",
+            "kind": "keyword-only",
+            "name": "key"
+          }
+        ],
+        "returns": "str"
+      },
+      "normalize_ticket_purpose": {
+        "decorators": [],
+        "kind": "function",
+        "parameters": [
+          {
+            "annotation": "object | None",
+            "default": null,
+            "kind": "positional",
+            "name": "raw"
+          }
+        ],
+        "returns": "str"
+      },
+      "purpose_from_authorization": {
+        "decorators": [],
+        "kind": "function",
+        "parameters": [
+          {
+            "annotation": "str",
+            "default": null,
+            "kind": "positional",
+            "name": "authorization"
+          }
+        ],
+        "returns": "str | None"
+      },
+      "renter_key_fingerprint": {
+        "decorators": [],
+        "kind": "function",
+        "parameters": [
+          {
+            "annotation": "str",
+            "default": null,
+            "kind": "positional",
+            "name": "raw"
+          }
+        ],
+        "returns": "str"
+      },
+      "require_ir_chat_purpose": {
+        "decorators": [],
+        "kind": "function",
+        "parameters": [
+          {
+            "annotation": "TicketClaims",
+            "default": null,
+            "kind": "positional",
+            "name": "claims"
+          }
+        ],
+        "returns": "TicketClaims"
+      },
+      "require_renter_chat_purpose": {
+        "decorators": [],
+        "kind": "function",
+        "parameters": [
+          {
+            "annotation": "TicketClaims",
+            "default": null,
+            "kind": "positional",
+            "name": "claims"
+          }
+        ],
+        "returns": "TicketClaims"
+      },
+      "require_ticket_tenant": {
+        "decorators": [],
+        "kind": "function",
+        "parameters": [
+          {
+            "annotation": "TicketClaims",
+            "default": null,
+            "kind": "positional",
+            "name": "claims"
+          },
+          {
+            "annotation": "uuid.UUID",
+            "default": null,
+            "kind": "positional",
+            "name": "tenant_id"
+          }
+        ],
+        "returns": "TicketClaims"
+      },
+      "ticket_hmac_key": {
+        "decorators": [],
+        "kind": "function",
+        "parameters": [],
+        "returns": "bytes"
+      },
+      "verify_ticket": {
+        "decorators": [],
+        "kind": "function",
+        "parameters": [
+          {
+            "annotation": "str",
+            "default": null,
+            "kind": "positional",
+            "name": "token"
+          },
+          {
+            "annotation": "uuid.UUID",
+            "default": null,
+            "kind": "keyword-only",
+            "name": "gateway_id"
+          },
+          {
+            "annotation": "datetime | None",
+            "default": "9284468224b1c3c93e7ba3377065c6230aeb41b3b91844010564bcfbffc48e70",
+            "kind": "keyword-only",
+            "name": "now"
+          },
+          {
+            "annotation": "Collection[uuid.UUID] | Iterable[uuid.UUID]",
+            "default": "53158a46832262834168e0bb8fb844b59e1f68cf8443d96d1df373dfb5f1999a",
+            "kind": "keyword-only",
+            "name": "revoked_lease_ids"
+          },
+          {
+            "annotation": "bytes | None",
+            "default": "9284468224b1c3c93e7ba3377065c6230aeb41b3b91844010564bcfbffc48e70",
+            "kind": "keyword-only",
+            "name": "key"
+          }
+        ],
+        "returns": "TicketClaims"
+      }
+    }
+  },
+  "version": "0.1.0"
+}

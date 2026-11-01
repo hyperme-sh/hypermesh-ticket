@@ -1,0 +1,60 @@
+{
+  "source_repository": "FyberLabs/panopticon",
+  "source_revision": "2d92d13f38d491c298631b9b9296979c1fbadd19",
+  "files": [
+    {
+      "source": "products/hypermesh-ticket/AGENTS.md",
+      "destination": "docs/source-AGENTS.md",
+      "sha256": "79d9181dc635a738ffd85ad2229bca5a762195f738a5be0172370e0ead7bf3f5",
+      "unchanged": true
+    },
+    {
+      "source": "products/hypermesh-ticket/README.md",
+      "destination": "docs/protocol.md",
+      "sha256": "6e93f1485ad47d2147436196bfcb065fe9c952e7c1693906d2698b1cd54968f5",
+      "unchanged": true
+    },
+    {
+      "source": "products/hypermesh-ticket/edge-routes.json",
+      "destination": "edge-routes.json",
+      "sha256": "13a01efcb4d1c49b903fa04b694d447ce8fce05d3b7105deeab42362a9fecb65",
+      "unchanged": true
+    },
+    {
+      "source": "products/hypermesh-ticket/pyproject.toml",
+      "destination": "pyproject.toml",
+      "sha256": "cb5cec03267a5e391cf23af93b5d5be4b8c9e81d9371f75e0c6330fe6c4a5c89",
+      "unchanged": false
+    },
+    {
+      "source": "products/hypermesh-ticket/src/hypermesh_ticket/__init__.py",
+      "destination": "src/hypermesh_ticket/__init__.py",
+      "sha256": "e1223948887d4400afdddd63d52985483a0a2c8c498967304d9bc0b6c3dd9886",
+      "unchanged": true
+    },
+    {
+      "source": "products/hypermesh-ticket/tests/hm1-vector.json",
+      "destination": "tests/hm1-vector.json",
+      "sha256": "ddd1f035fd67f099867d780a9427cf6f208a99beff74a1a0a116115fefdd0a9e",
+      "unchanged": true
+    },
+    {
+      "source": "products/hypermesh-ticket/tests/test_installed_packages.py",
+      "destination": "integration/test_monorepo_installed_packages.py",
+      "sha256": "5bfd1088227f57b9402a7a0bceb63acf96282e0e84316c0101ef83afc8bc9663",
+      "unchanged": true
+    },
+    {
+      "source": "products/hypermesh-ticket/tests/test_protocol.py",
+      "destination": "tests/test_protocol.py",
+      "sha256": "958572553da171e17f072361bf1d8e301b7155559cea06a178e45f7b1b6bc8df",
+      "unchanged": true
+    },
+    {
+      "source": "scripts/api_snapshots/hypermesh-ticket.json",
+      "destination": "contracts/source-ticket.json",
+      "sha256": "c37cdca5742a75648869fc35073cc9e488fc3fe027e482e91d0f50d2fd3eae82",
+      "unchanged": true
+    }
+  ]
+}

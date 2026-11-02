@@ -7,7 +7,7 @@ name = "hypermesh-ticket"
 version = "0.1.0"
 requires-python = ">=3.13"
 description = "Versioned Hypermesh family lease ticket protocol"
-dependencies = ["controlplane-identity @ git+ssh://git@github.com/FyberLabs/controlplane-identity.git@13a8257be7762f5e35af63e49136e943a990535c"]
+dependencies = ["controlplane-identity @ git+ssh://git@github.com/hyperme-sh/controlplane-identity.git@13a8257be7762f5e35af63e49136e943a990535c"]
 
 [dependency-groups]
 dev = ["pytest>=8.4.0"]

@@ -8,7 +8,7 @@ Runtime source and the original fixed-ticket vector are byte-for-byte unchanged.
 ## Standalone checks
 
 Requires Python 3.13+, uv 0.11.26, and existing SSH read access to the private
-`FyberLabs/controlplane-identity` repository:
+`hyperme-sh/controlplane-identity` repository:
 
 ```sh
 uv sync --frozen

@@ -9,4 +9,4 @@ pass. Keep full-SHA dependency pins in distribution metadata and uv.lock.
 The integration suite also requires the gateway workspace.
 
 Keep Actions disabled until scoped private dependency access and hosted-worker
-policy are configured. Never use the shared self-hosted runner fleet.
+policy are configured. Use the approved shared-local self-hosted runner group.

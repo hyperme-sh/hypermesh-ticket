@@ -30,7 +30,7 @@ own checks. `contracts/source-ticket.json` records the API contract snapshot.
 ## Automated checks
 
 The workflow runs on main pushes and manual dispatches targeting main, using
-GitHub-hosted Ubuntu workers and read-only repository permissions. It requires
+the shared-local self-hosted Linux runners and read-only repository permissions. It requires
 `DEPENDENCY_READ_TOKEN`, scoped to contents:read on
 `hyperme-sh/controlplane-identity` only. The token is supplied only to the check
 step through a repository-specific Git HTTPS header; checkout does not retain

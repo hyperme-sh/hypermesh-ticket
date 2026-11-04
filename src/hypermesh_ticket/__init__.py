@@ -1,6 +1,6 @@
 """Signed Hypermesh lease ticket.
 
-(s)panopticon (the broker) issues the grant. The Fyber gateway verifies locally
+spanopticon (the broker) issues the grant. The Fyber gateway verifies locally
 and honors it until exp without GET /leases or any other control-plane HTTP
 on the chat path. Not a WireGuard key. Not a JobKind.
 

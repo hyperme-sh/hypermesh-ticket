@@ -50,5 +50,14 @@ def test_installed_identity_checks_retirement_when_enforced(monkeypatch, blocked
 
     monkeypatch.setattr(account_lifecycle.httpx, 'AsyncClient', lambda **kwargs:
         original(transport=httpx.MockTransport(respond), **kwargs))
-    assert purpose_from_authorization('Bearer ' + token) == (None if blocked else 'renter')
+    from controlplane_identity.security.api_key_exchange_jwt import try_decode_api_key_session_jwt
+    import jwt
+    # Purpose extraction stays local; consumers explicitly invoke the owner guard.
+    assert purpose_from_authorization('Bearer ' + token) == 'renter'
+    claims = try_decode_api_key_session_jwt(token)
+    if blocked:
+        with pytest.raises(jwt.InvalidTokenError):
+            account_lifecycle.require_open_account(claims)
+    else:
+        account_lifecycle.require_open_account(claims)
     assert requests

@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "line": "0.24",
+  "line": "0.1",
   "components": {
     "hypermesh-ticket": {
-      "version": "0.24.0",
+      "version": "0.1.0",
       "contract": "contract.json",
       "contract_sha256": "f6d4825f28fc305f393447a2a0546dbd28fc14c54c4e4b66aad366c19bfaf810",
       "artifact": {
         "kind": "package",
-        "uri": "urn:sha256:918a61ef62dba2b957d561facf6266e1b64e5c5003c316effe10c195dce9ba9e",
-        "sha256": "918a61ef62dba2b957d561facf6266e1b64e5c5003c316effe10c195dce9ba9e"
+        "uri": "urn:sha256:151f82bfe144f806c3fcd90726d5aa5ee8a24950cc5f71652b455c12588d263c",
+        "sha256": "151f82bfe144f806c3fcd90726d5aa5ee8a24950cc5f71652b455c12588d263c"
       }
     }
   },

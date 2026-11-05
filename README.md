@@ -33,7 +33,7 @@ The token is `hm1.<body>.<signature>`. `body` is the base64url form of canonical
 
 `honor_ticket` is that check for the chat router. On failure it raises `TicketNotReady`, which the gateway maps to HTTP **409** with detail **`instance not ready`**.
 
-`TicketClaims.chat_upstream()` is the host completions URL on the peer address, with the CIDR prefix removed: `http://10.77.0.2:8080/v1/chat/completions` for `10.77.0.2/32`.
+`TicketClaims.chat_upstream()` is the host completions URL on the address before the `/` in `client_address`: `http://10.77.0.2:8080/v1/chat/completions` for `10.77.0.2/32`.
 
 Further checks on the verified claims:
 
@@ -156,7 +156,7 @@ uv sync --frozen
 bash scripts/check-package.sh
 ```
 
-The script checks the lock, runs the suite from source, installs the built wheel in a fresh interpreter, and runs the suite again from a wheel rebuilt from the sdist. Those three runs execute the same tests. `tests/test_protocol.py` covers the `hm1` vector and the rejection rules. The installed-package test signs and verifies in an isolated interpreter and imports only this package.
+The script checks the lock, runs the suite from source, installs the built wheel in a fresh interpreter, and runs the suite again from a wheel rebuilt from the sdist. Those three runs execute the same tests. `tests/test_protocol.py` covers the `hm1` vector and the rejection rules. The installed-package test signs and verifies in an isolated interpreter and checks that the control-plane service is not installed beside this package.
 
 ```sh
 bash scripts/check-package.sh --fixtures

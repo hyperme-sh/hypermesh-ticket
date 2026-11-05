@@ -4,10 +4,10 @@ build-backend = "hatchling.build"
 
 [project]
 name = "hypermesh-ticket"
-version = "0.24.0"
+version = "0.1.0"
 requires-python = ">=3.13"
 description = "Versioned Hypermesh family lease ticket protocol"
-dependencies = ["controlplane-identity @ git+https://github.com/hyperme-sh/controlplane-identity.git@797bb4303075e3e7fb54dd42a1451bfe3fd089fa"]
+dependencies = ["controlplane-identity @ git+https://github.com/hyperme-sh/controlplane-identity.git@127d15fce7c3af8d8f8e239fb306ce88de76f02a"]
 
 [dependency-groups]
 dev = ["pytest>=8.4.0"]

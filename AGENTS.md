@@ -60,3 +60,11 @@ preparation, package validation and release jobs. This supersedes earlier hosted
 runner exceptions in this file. Keep dedicated infrastructure-convergence and
 trusted payment-smoke jobs on their existing specialized selectors. Reusable
 workflows must route private callers to debrunners. Do not add approval gates.
+
+## Public-core qualification policy
+
+The identity dependency is public. Standard source/wheel/rebuilt-sdist validation
+needs no private credentials. Private jobs use debrunners; public jobs use hosted
+Ubuntu. This supersedes the older hosted/private dependency exceptions above.
+Run the transferred isolated-install ticket case in every package form. Do not
+create version tags or publish releases without specific user approval.

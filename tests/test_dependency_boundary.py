@@ -26,7 +26,7 @@ def test_distribution_metadata_retains_exact_identity_pin():
     dependencies = requires('hypermesh-ticket')
     identity = [value for value in dependencies if value.startswith('controlplane-identity')]
     assert len(identity) == 1
-    assert 'git+https://github.com/hyperme-sh/controlplane-identity.git@127d15fce7c3af8d8f8e239fb306ce88de76f02a' in identity[0]
+    assert 'git+https://github.com/hyperme-sh/controlplane-identity.git@5aeff3d2c00568f39ca6e8b75c7e63883d3a510b' in identity[0]
 
 
 @pytest.mark.parametrize('blocked', [False, True])

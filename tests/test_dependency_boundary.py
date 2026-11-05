@@ -26,4 +26,4 @@ def test_distribution_metadata_retains_exact_identity_pin():
     dependencies = requires('hypermesh-ticket')
     identity = [value for value in dependencies if value.startswith('controlplane-identity')]
     assert len(identity) == 1
-    assert 'git+https://github.com/hyperme-sh/controlplane-identity.git@5675e7b617db705a7b0caf25f2d65d8a492f32b1' in identity[0]
+    assert 'git+https://github.com/hyperme-sh/controlplane-identity.git@fbdeb1c11f17fa192b7505355c64d1f0af1234dc' in identity[0]

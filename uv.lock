@@ -238,8 +238,8 @@ wheels = [
 
 [[package]]
 name = "controlplane-identity"
-version = "0.24.0"
-source = { git = "https://github.com/hyperme-sh/controlplane-identity.git?rev=94717d746f9d321dde1a44019c10e31acaee3204#94717d746f9d321dde1a44019c10e31acaee3204" }
+version = "1.0.0"
+source = { git = "https://github.com/hyperme-sh/controlplane-identity.git?rev=797bb4303075e3e7fb54dd42a1451bfe3fd089fa#797bb4303075e3e7fb54dd42a1451bfe3fd089fa" }
 dependencies = [
     { name = "eth-abi" },
     { name = "eth-account" },
@@ -630,7 +630,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "controlplane-identity", git = "https://github.com/hyperme-sh/controlplane-identity.git?rev=94717d746f9d321dde1a44019c10e31acaee3204" }]
+requires-dist = [{ name = "controlplane-identity", git = "https://github.com/hyperme-sh/controlplane-identity.git?rev=797bb4303075e3e7fb54dd42a1451bfe3fd089fa" }]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8.4.0" }]

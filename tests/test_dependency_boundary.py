@@ -26,4 +26,38 @@ def test_distribution_metadata_retains_exact_identity_pin():
     dependencies = requires('hypermesh-ticket')
     identity = [value for value in dependencies if value.startswith('controlplane-identity')]
     assert len(identity) == 1
-    assert 'git+https://github.com/hyperme-sh/controlplane-identity.git@94717d746f9d321dde1a44019c10e31acaee3204' in identity[0]
+    assert 'git+https://github.com/hyperme-sh/controlplane-identity.git@797bb4303075e3e7fb54dd42a1451bfe3fd089fa' in identity[0]
+
+
+@pytest.mark.parametrize('blocked', [False, True])
+def test_installed_identity_checks_retirement_when_enforced(monkeypatch, blocked):
+    import httpx
+    from controlplane_identity import account_lifecycle
+
+    monkeypatch.setattr(configuration, '_configured', SimpleNamespace(
+        usable_api_key_exchange_secret=lambda: 'isolated-ticket-test-signing-secret-32-chars'))
+    token = mint_api_key_session_jwt(key_record_id=uuid.uuid4(), tenant_id=uuid.uuid4(),
+                                     scopes=['chat'], purpose='renter')
+    monkeypatch.setenv('ACCOUNT_CLOSURE_ENFORCEMENT_ENABLED', 'true')
+    monkeypatch.setenv('ACCOUNT_CLOSURE_GUARD_TOKEN', 'r' * 32)
+    monkeypatch.setenv('ACCOUNT_CLOSURE_GUARD_URL', 'https://users.example')
+    original = httpx.AsyncClient
+    requests = []
+
+    def respond(request):
+        requests.append(request)
+        return httpx.Response(200, json={'blocked': blocked})
+
+    monkeypatch.setattr(account_lifecycle.httpx, 'AsyncClient', lambda **kwargs:
+        original(transport=httpx.MockTransport(respond), **kwargs))
+    from controlplane_identity.security.api_key_exchange_jwt import try_decode_api_key_session_jwt
+    import jwt
+    # Purpose extraction stays local; consumers explicitly invoke the owner guard.
+    assert purpose_from_authorization('Bearer ' + token) == 'renter'
+    claims = try_decode_api_key_session_jwt(token)
+    if blocked:
+        with pytest.raises(jwt.InvalidTokenError):
+            account_lifecycle.require_open_account(claims)
+    else:
+        account_lifecycle.require_open_account(claims)
+    assert requests

@@ -14,7 +14,7 @@ uv sync --frozen
 bash scripts/check-package.sh
 ```
 
-Identity is pinned to full commit `94717d746f9d321dde1a44019c10e31acaee3204`
+Identity is pinned to full commit `797bb4303075e3e7fb54dd42a1451bfe3fd089fa`
 in standard distribution metadata and the frozen lock. Ordinary wheel installs
 resolve the same dependency without a sibling checkout or workspace override.
 

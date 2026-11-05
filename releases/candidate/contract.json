@@ -1,0 +1,7 @@
+{
+  "coverage": "conservative complete packaged ticket runtime, signing, verification and purpose bytes",
+  "packaged_file_sha256": {
+    "hypermesh_ticket/__init__.py": "929e135af5051e9fd47716e587380474eb93c67e488651d55d07e1706722e1b3"
+  },
+  "schema_version": 1
+}

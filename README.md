@@ -46,15 +46,15 @@ successful caller jobs alone cannot establish acceptance. Missing evidence and
 first-stable bootstrap remain closed. Package qualification, coordinated consumer
 acceptance and runtime deployment remain separate.
 
-## Isolated PR qualification
+## Optional fixture qualification
 
-`bash scripts/check-package.sh --fixtures` installs the real published identity
-0.24 wheel after checking its digest, declared Git pin and lockfile. Fixtures are
-excluded from distributions. This read-only hosted PR lane has no private
-credentials; main retains its scoped direct-Git installer and runner boundary.
-Candidate declarations are bound to actual wheel bytes and complete runtime
-contracts; rebuilt-sdist contracts must match. Gateway/deployed consumer
-acceptance and installer-metadata compatibility remain separate.
+`bash scripts/check-package.sh --fixtures` verifies and installs the identity
+wheel built from the exact pinned source revision. The fixture manifest records
+its source and digest; the version is the dependency's declared version, not a
+release-train number. Fixtures are excluded from distributions. Normal PR and
+main CI use public Git dependencies directly, without a private token.
+Candidate declarations remain bound to actual wheel bytes and exported runtime
+contracts. Gateway deployment and complete-system acceptance are separate.
 
 ## Test qualification and stable acceptance
 
@@ -73,9 +73,9 @@ first stable bootstrap and coordinated release qualification remain separate.
 No stable version, approval prerequisite or deployment is introduced here.
 
 
-### Published stable distribution
+### Historical stable distribution
 
-The accepted record binds the existing immutable `v0.24.0` release to its actual
+The historical accepted record binds the existing immutable `v0.24.0` release to its actual
 GitHub release ID, source revision and published asset digests. Test snapshots
 remain under `releases/qualification` and do not establish stable acceptance.
 Runtime deployment and coordinated consumer acceptance remain separate.

@@ -1,7 +1,7 @@
 # hypermesh-ticket
 
 Hypermesh family lease-ticket signing and verification. Package version is
-**0.1.0**; tickets use the **hm1/v=1** wire format. See [the protocol
+**0.24.0**; tickets use the **hm1/v=1** wire format. See [the protocol
 contract](docs/protocol.md) for signed scope, purpose, expiry and revocation.
 
 ## Development
@@ -14,7 +14,7 @@ uv sync --frozen
 bash scripts/check-package.sh
 ```
 
-Identity is pinned to full commit `13a8257be7762f5e35af63e49136e943a990535c`
+Identity is pinned to full commit `94717d746f9d321dde1a44019c10e31acaee3204`
 in standard distribution metadata and the frozen lock. Ordinary wheel installs
 resolve the same dependency without a sibling checkout or workspace override.
 
@@ -54,3 +54,13 @@ organization policy may shorten it). Expired evidence fails closed: validate a
 new main revision. The publisher verifies the run, source, workflow and artifact
 digest independently of release metadata. Repository immutable releases must be
 enabled. See the [shared release contract](https://github.com/hyperme-sh/.github/blob/7749591fccd30d46ba9b0adabe82114001c9d0de/actions/release-channel/README.md).
+
+## Isolated PR qualification
+
+`bash scripts/check-package.sh --fixtures` installs the real published identity
+0.24 wheel after checking its digest, declared Git pin and lockfile. Fixtures are
+excluded from distributions. This read-only hosted PR lane has no private
+credentials; main retains its scoped direct-Git installer and runner boundary.
+Candidate declarations are bound to actual wheel bytes and complete runtime
+contracts; rebuilt-sdist contracts must match. Gateway/deployed consumer
+acceptance and installer-metadata compatibility remain separate.

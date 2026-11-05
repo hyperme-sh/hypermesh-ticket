@@ -1,5 +1,14 @@
 # hypermesh-ticket
 
+## Current version authority
+
+Current development version: `0.1.0`. The services remain before the unreleased
+0.24.0 milestone. Earlier 0.24/1.0 preparation and publication notes below are
+historical and do not authorize those versions. Existing tags and historical
+artifacts remain untouched. Development uses exact source pins and rebuilt
+artifacts; no prior release is required. Version changes, tags and publication
+require the owner's explicit authorization to the agent.
+
 Hypermesh family lease-ticket signing and verification. Package version is
 **0.24.0**; tickets use the **hm1/v=1** wire format. See [the protocol
 contract](docs/protocol.md) for signed scope, purpose, expiry and revocation.

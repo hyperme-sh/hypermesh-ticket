@@ -1,7 +1,7 @@
 # hypermesh-ticket
 
 Hypermesh family lease-ticket signing and verification. Package version is
-**0.1.0**; tickets use the **hm1/v=1** wire format. See [the protocol
+**0.24.0**; tickets use the **hm1/v=1** wire format. See [the protocol
 contract](docs/protocol.md) for signed scope, purpose, expiry and revocation.
 
 ## Development
@@ -14,7 +14,7 @@ uv sync --frozen
 bash scripts/check-package.sh
 ```
 
-Identity is pinned to full commit `fbdeb1c11f17fa192b7505355c64d1f0af1234dc`
+Identity is pinned to full commit `797bb4303075e3e7fb54dd42a1451bfe3fd089fa`
 in standard distribution metadata and the frozen lock. Ordinary wheel installs
 resolve the same dependency without a sibling checkout or workspace override.
 
@@ -42,15 +42,56 @@ is supplied by this repository. The workflow does not publish or deploy.
 
 ## Release channels
 
-Successful main-push validation retains the validated Python wheel and source distribution and publishes
-an immutable `test-<commit>` GitHub prerelease. Push a `vMAJOR.MINOR.PATCH`
-tag at that tested commit to promote the exact files to a stable release,
-without rebuilding. Repository visibility applies to all package assets.
-Package metadata versions are preserved; these are GitHub distribution snapshots,
-not automatic PyPI publication or service deployment.
+Main validation retains its exact qualified files in Actions artifacts. It does
+not create GitHub releases or tags. Historical `test-<commit>` prereleases remain
+qualification evidence and do not establish an accepted stable release.
 
-Promotion requires the original Actions artifact (90-day requested retention;
-organization policy may shorten it). Expired evidence fails closed: validate a
-new main revision. The publisher verifies the run, source, workflow and artifact
-digest independently of release metadata. Repository immutable releases must be
-enabled. See the [shared release contract](https://github.com/hyperme-sh/.github/blob/7749591fccd30d46ba9b0adabe82114001c9d0de/actions/release-channel/README.md).
+Stable publication requires an explicit `vMAJOR.MINOR.PATCH` tag, the exact
+successful main validation artifact, compatible declared contracts and an actual
+immutable stable baseline. The publisher independently verifies that evidence;
+successful caller jobs alone cannot establish acceptance. Missing evidence and
+first-stable bootstrap remain closed. Package qualification, coordinated consumer
+acceptance and runtime deployment remain separate.
+
+## Isolated PR qualification
+
+`bash scripts/check-package.sh --fixtures` installs the real published identity
+0.24 wheel after checking its digest, declared Git pin and lockfile. Fixtures are
+excluded from distributions. This read-only hosted PR lane has no private
+credentials; main retains its scoped direct-Git installer and runner boundary.
+Candidate declarations are bound to actual wheel bytes and complete runtime
+contracts; rebuilt-sdist contracts must match. Gateway/deployed consumer
+acceptance and installer-metadata compatibility remain separate.
+
+## Test qualification and stable acceptance
+
+GitHub `test-<commit>` prereleases are development snapshots. Their embedded
+package version does not reserve a stable version. Artifact and consumer evidence
+lives under `releases/qualification`; the current wheel binding is still checked
+by package CI, alongside any future explicit stable candidate. Earlier test
+snapshot receipts are preserved there with an explicit non-stable classification.
+
+`releases/accepted` and `SPANOPTICON_RELEASE_BASELINE_SHA` are reserved for an
+actual immutable stable GitHub release. The pinned shared guard verifies the live
+release channel, stable tag source and asset digests; a test snapshot cannot
+become accepted through a provenance label. No stable baseline is recorded until
+that release exists. Stable publication remains closed without a valid baseline;
+first stable bootstrap and coordinated release qualification remain separate.
+No stable version, approval prerequisite or deployment is introduced here.
+
+
+### Published stable distribution
+
+The accepted record binds the existing immutable `v0.24.0` release to its actual
+GitHub release ID, source revision and published asset digests. Test snapshots
+remain under `releases/qualification` and do not establish stable acceptance.
+Runtime deployment and coordinated consumer acceptance remain separate.
+
+### Actions qualification and stable publication
+
+Main merges and workflow completion do not publish GitHub test releases. Exact
+qualification files remain in Actions artifacts with finite retention. The pinned
+publisher independently verifies a real immutable stable baseline and refuses
+qualification snapshots, even if a caller job reports success. Existing valid
+stable records are retained; no release, version change, deployment or human
+approval prerequisite is introduced by this correction.

@@ -1,0 +1,23 @@
+{
+  "repository": "hyperme-sh/hypermesh-ticket",
+  "revision": "f42e6a9fa1b0936a56b38775de2682dfd090ec01",
+  "release_id": 434663771,
+  "immutable": true,
+  "tag": "test-f42e6a9fa1b0936a56b38775de2682dfd090ec01",
+  "run_id": 41949423085,
+  "artifact_id": 13380695467,
+  "assets": {
+    "hypermesh_ticket-0.24.0-py3-none-any.whl": "sha256:4d65eaecfad9aacfccf4a3afde1e4be36f8aa00bc495a03e77dc3087dbdf5d28",
+    "hypermesh_ticket-0.24.0.tar.gz": "sha256:12c056a5007b99865d61fb8db4db96933dda71c06ebc3139bc6ff3386dbd0d10"
+  },
+  "published_release_url": "https://github.com/hyperme-sh/hypermesh-ticket/releases/tag/test-f42e6a9fa1b0936a56b38775de2682dfd090ec01",
+  "checks": [
+    "successful same-repository main-push package run",
+    "live Actions artifact digest",
+    "release bytes equal tested bytes",
+    "immutable release and tag revision",
+    "asset digests equal manifest"
+  ],
+  "consumer_qualification": "10 consumers pass in source, wheel and rebuilt-sdist contexts with 22 tooling tests. Actual downloaded wheel passes 10 signed vector, rejection and JWT purpose consumers using verified identity 0.24 artifact.",
+  "limitations": "Wire hm1/v=1 remains unchanged. Gateway integration and deployed acceptance remain separate."
+}

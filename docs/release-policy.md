@@ -1,9 +1,12 @@
 # Release compatibility
 
-This component targets the shared **0.24.x** release line. Components share major
-and minor versions; patch numbers advance independently and must preserve their
-accepted API contracts. Existing package versions are retained until a qualified
-release is prepared; installing this workflow does not qualify those versions.
+Channel behavior for this repository is in [releasing.md](releasing.md).
+`release-policy.json` is the checked configuration and currently sets line `0.1`
+with the version in `pyproject.toml`.
+
+Components on a shared line share major and minor versions; patch numbers
+advance independently and must preserve their accepted API contracts. Existing
+package versions stay as recorded until a qualified release is prepared.
 
 `release-policy.json` identifies the owner and every owning package version file.
 The pinned Spanopticon workflow checks this configuration on pull requests.
@@ -19,8 +22,9 @@ Before attempting a release:
    baseline needs automated artifact/consumer qualification and provenance;
    examples and invented digests are not accepted release evidence.
 2. Generate the candidate bundle at `releases/candidate/release.json` from the
-   release artifacts. It must contain exactly this component, use line `0.24`,
-   and match every declared owning package version and the requested tag/version.
+   release artifacts. It must contain exactly this component, use the line in
+   `release-policy.json`, and match every declared owning package version and
+   the requested tag/version.
 3. Run admission against the trusted baseline. Patch contracts must remain
    unchanged; changing a published artifact at the same version is rejected.
    Verify artifact provenance and downstream consumer behavior separately.
@@ -33,12 +37,6 @@ Missing baselines fail closed. This workflow neither publishes nor deploys and
 does not enable repository Actions, grant private dependency access, or prove
 that a declared artifact exists. See the [Spanopticon release policy](https://github.com/hyperme-sh/spanopticon/blob/main/docs/releases.md)
 for the manifest format and compatibility rules.
-
-Do not add required reviewers, branch protections, approval rulesets, environment
-approvals, CODEOWNERS approval requirements, or release/deployment approval gates
-unless the user explicitly requests that specific change. This includes production
-releases. Automated tests and advisory reviews are welcome; human approval
-prerequisites are not. GitHub plan upgrades are not release-adoption prerequisites.
 
 ## Test qualification and stable acceptance
 

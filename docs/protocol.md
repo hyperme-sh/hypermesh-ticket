@@ -1,11 +1,12 @@
 # Hypermesh ticket protocol
 
-`hypermesh-ticket` is the Hypermesh family package for lease ticket claims,
+`hypermesh-ticket` is the Hypermesh library for lease ticket claims,
 issuance, local verification, chat-purpose gates and renter-key fingerprints.
 Hypermesh and its gateway import the public `hypermesh_ticket` module. It owns
 no routes, database tables or service lifecycle.
 
-The package uses the coordinated `0.24.x` release line. The wire format remains version 1: `hm1.<body>.<signature>`,
+This tree is package `0.1.0`. That version is independent of the wire format.
+The wire format is version 1: `hm1.<body>.<signature>`,
 with a canonical JSON body, signed `v=1` and HMAC-SHA256. Existing signatures,
 tenant and gateway binding, expiry, purpose handling and revocation behavior are
 preserved. An explicit signing key or `HYPERMESH_TICKET_HMAC_KEY` is required;
@@ -16,10 +17,10 @@ to read an authenticated API-key exchange JWT. Applications configure identity
 through the existing interface. Ticket issuance and verification with explicit
 keys use the standard library and do not load a service.
 
-The legacy `hypermesh_service.ticket` import aliases the family implementation
-for compatibility. The gateway depends on this wheel and ships no Hypermesh
-service files. Its owner HTTP responses and synthetic identities are test
-fixtures, with no service seed or app imports.
+An installed wheel imports `hypermesh_ticket` and does not include the
+control-plane service (`hypermesh_service`). The gateway depends on this wheel.
+Issuance and verification behavior is specified in the README. Release records
+are in [releasing.md](releasing.md).
 
 Run `bash scripts/check-package.sh` for standalone fixed-ticket vectors, rejection
 cases and installed identity-purpose checks. The retained gateway integration suite

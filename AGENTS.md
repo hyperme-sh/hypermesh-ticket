@@ -29,7 +29,7 @@ Preserve hm1/v=1 bytes, signed scope, purpose, expiry and revocation semantics.
 Run bash scripts/check-package.sh with existing read access to the pinned private
 identity dependency. Source, fresh external-wheel and rebuilt-sdist tests must
 pass. Keep full-SHA dependency pins in distribution metadata and uv.lock.
-The integration suite also requires the gateway workspace.
+The integration suite also requires the gateway workspace and runs in CI, not as an ad-hoc host receipt.
 
 Keep Actions disabled until scoped private dependency access and hosted-worker
 policy are configured. Use the approved shared-local self-hosted runner group.
@@ -68,6 +68,27 @@ needs no private credentials. Private jobs use debrunners; public jobs use hoste
 Ubuntu. This supersedes the older hosted/private dependency exceptions above.
 Run the transferred isolated-install ticket case in every package form. Do not
 create version tags or publish releases without specific user approval.
+
+## Integration and receipt runs
+
+No agent runs integration tests or functional API receipts by hand on hosts
+or other shared resources, and none run those suites outside CI. On a pull
+request, agents run only unit and contract tests. CI may add a smoke check
+scoped to the services the pull request touches. A toggle or configuration
+change needs a unit or contract test for that change, not a full receipt or
+end-to-end suite.
+
+The full integration suite runs once as a nightly CI batch against main.
+That batch uses a single concurrency group and cancels any run it supersedes.
+When a nightly run fails on something whose issue is already closed, CI files
+a new issue for that failure and links the closed issue when one exists.
+
+Receipts and full integration results are not a Product Sign-off gate. Green
+CI and clean reviews are enough for Sign-off.
+
+Authorized CI workflows, including test-bundle publication and existing smoke
+or owner-integration jobs, may keep running in CI. Agents must not start or
+repeat those jobs by hand on shared hosts.
 
 ## Service deployments and binary provenance
 

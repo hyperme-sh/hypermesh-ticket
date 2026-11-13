@@ -7,15 +7,22 @@ no routes, database tables or service lifecycle.
 
 This tree is package `0.1.0`. That version is independent of the wire format.
 The wire format is version 1: `hm1.<body>.<signature>`,
-with a canonical JSON body, signed `v=1` and HMAC-SHA256. Existing signatures,
-tenant and gateway binding, expiry, purpose handling and revocation behavior are
-preserved. An explicit signing key or `HYPERMESH_TICKET_HMAC_KEY` is required;
-the existing development fallback remains limited to development configuration.
+with a canonical JSON body and signed `v=1`. New issuance signs the exact body
+with Ed25519 and includes `alg: Ed25519`. The existing `key=` issuance API
+retains marker-free HMAC-SHA256 bytes for migration. Verifiers accept legacy
+absent/`HS256` markers only before a required timezone-aware overlap deadline
+(`hmac_accept_until=` or `HYPERMESH_TICKET_HMAC_ACCEPT_UNTIL`). Unset, malformed,
+or elapsed deadlines reject HMAC, including when the key is explicit.
+
+Tenant, device, lease, address, contract, gateway, expiry, purpose and revocation
+semantics remain unchanged. Ed25519 verification uses only a public key;
+no source signing-key default exists. The README describes verifier-first
+migration and configuration. No synchronized peer version is required.
 
 `purpose_from_authorization` uses the declared `controlplane-identity` dependency
 to read an authenticated API-key exchange JWT. Applications configure identity
 through the existing interface. Ticket issuance and verification with explicit
-keys use the standard library and do not load a service.
+keys do not load a service; Ed25519 uses cryptography.
 
 An installed wheel imports `hypermesh_ticket` and does not include the
 control-plane service (`hypermesh_service`). The gateway depends on this wheel.

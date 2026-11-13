@@ -622,6 +622,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "controlplane-identity" },
+    { name = "cryptography" },
 ]
 
 [package.dev-dependencies]
@@ -630,7 +631,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "controlplane-identity", git = "https://github.com/hyperme-sh/controlplane-identity.git?rev=5aeff3d2c00568f39ca6e8b75c7e63883d3a510b" }]
+requires-dist = [
+    { name = "controlplane-identity", git = "https://github.com/hyperme-sh/controlplane-identity.git?rev=5aeff3d2c00568f39ca6e8b75c7e63883d3a510b" },
+    { name = "cryptography", specifier = ">=44.0.0" },
+]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8.4.0" }]

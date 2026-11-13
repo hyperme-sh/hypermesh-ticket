@@ -4,7 +4,7 @@ spanopticon (the broker) issues the grant. The Fyber gateway verifies locally
 and honors it until exp without GET /leases or any other control-plane HTTP
 on the chat path. Not a WireGuard key. Not a JobKind.
 
-Signing key is CP-held: HYPERMESH_TICKET_HMAC_KEY (HMAC-SHA256). Never a
+Signing key is Plane-held; gateways receive only the Ed25519 public key. Never a
 host secret, renter api-key, or hm_gw_ credential. Never put the signing
 key on the event bus, in logs, or in site copy.
 """
@@ -21,12 +21,16 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Collection, Iterable, Literal
 
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
+
 TICKET_VERSION = 1
 TICKET_PREFIX = "hm1"
 TICKET_HMAC_ENV = "HYPERMESH_TICKET_HMAC_KEY"
 TICKET_DEV_ENV = "HYPERMESH_DEV"
-# In-source fallback is local-compose only. Never used unless HYPERMESH_DEV or FASTAPI_ENV=development.
-_DEV_TICKET_HMAC_KEY = "dev-only-hypermesh-ticket-hmac"
+TICKET_PRIVATE_KEY_ENV = "HYPERMESH_TICKET_ED25519_PRIVATE_KEY"
+TICKET_PUBLIC_KEY_ENV = "HYPERMESH_TICKET_ED25519_PUBLIC_KEY"
+TICKET_HMAC_OVERLAP_ENV = "HYPERMESH_TICKET_HMAC_ACCEPT_UNTIL"
 INSTANCE_NOT_READY = "instance not ready"
 TICKET_STATUS_ACTIVE = "active"
 _MISSING_TICKET_KEY = "HYPERMESH_TICKET_HMAC_KEY is required"
@@ -157,24 +161,10 @@ def purpose_from_authorization(authorization: str) -> str | None:
     return value
 
 
-def _truthy_env(name: str) -> bool:
-    return (os.environ.get(name) or "").strip().lower() in {"1", "true", "yes", "on"}
-
-
-def _dev_ticket_fallback_allowed() -> bool:
-    """In-source HMAC key is local-compose only. Do not silently sign prod tickets."""
-
-    if _truthy_env(TICKET_DEV_ENV):
-        return True
-    return (os.environ.get("FASTAPI_ENV") or "").strip().lower() == "development"
-
-
 def ticket_hmac_key() -> bytes:
     raw = (os.environ.get(TICKET_HMAC_ENV) or "").strip()
     if raw:
         return raw.encode("utf-8")
-    if _dev_ticket_fallback_allowed():
-        return _DEV_TICKET_HMAC_KEY.encode("utf-8")
     raise TicketError(_MISSING_TICKET_KEY)
 
 
@@ -220,17 +210,53 @@ def _mac(body: bytes, *, key: bytes) -> bytes:
     return hmac.new(key, body, hashlib.sha256).digest()
 
 
-def issue_ticket(claims: TicketClaims, *, key: bytes | None = None) -> str:
-    """Return a compact signed ticket. Caller must only issue for status=active."""
+def _key_bytes(name: str) -> bytes:
+    try:
+        value = base64.b64decode(os.environ.get(name, ""), validate=True)
+        if len(value) != 32:
+            raise ValueError()
+        return value
+    except ValueError as exc:
+        raise TicketError(f"{name} must contain a base64 encoded 32-byte key") from exc
 
+
+def issue_ticket(
+    claims: TicketClaims, *, key: bytes | None = None,
+    private_key: Ed25519PrivateKey | None = None,
+) -> str:
+    """Sign with Ed25519; explicit legacy key= preserves historical HMAC bytes."""
     if claims.status != TICKET_STATUS_ACTIVE:
         raise TicketError("ticket is only issued for an active lease")
     if not claims.client_address.strip():
         raise TicketError("client_address is required")
-    normalize_ticket_purpose(claims.purpose)
-    signing_key = key if key is not None else ticket_hmac_key()
-    body = _canonical(_claims_payload(claims))
-    return f"{TICKET_PREFIX}.{_b64url(body)}.{_b64url(_mac(body, key=signing_key))}"
+    if private_key is not None and key is not None:
+        raise TicketError("ambiguous signing keys")
+    payload = _claims_payload(claims)
+    if private_key is None and key is None:
+        if os.environ.get(TICKET_PRIVATE_KEY_ENV) or not os.environ.get(TICKET_HMAC_ENV):
+            private_key = Ed25519PrivateKey.from_private_bytes(_key_bytes(TICKET_PRIVATE_KEY_ENV))
+        else:
+            if datetime.now(UTC) >= _overlap_end(None):
+                raise TicketError("HMAC overlap ended")
+            key = ticket_hmac_key()
+    if private_key is not None:
+        if not isinstance(private_key, Ed25519PrivateKey):
+            raise TicketError("Ed25519 private key required")
+        payload["alg"] = "Ed25519"
+    body = _canonical(payload)
+    signature = private_key.sign(body) if private_key is not None else _mac(body, key=key)
+    return f"{TICKET_PREFIX}.{_b64url(body)}.{_b64url(signature)}"
+
+
+def _overlap_end(value: datetime | None) -> datetime:
+    if value is None:
+        try:
+            value = datetime.fromisoformat(os.environ.get(TICKET_HMAC_OVERLAP_ENV, ""))
+        except ValueError as exc:
+            raise TicketError("HMAC overlap end is required") from exc
+    if value.tzinfo is None:
+        raise TicketError("HMAC overlap end must include timezone")
+    return value
 
 
 def _parse_token(token: str) -> tuple[dict[str, object], bytes, bytes]:
@@ -277,20 +303,36 @@ def verify_ticket(
     now: datetime | None = None,
     revoked_lease_ids: Collection[uuid.UUID] | Iterable[uuid.UUID] = (),
     key: bytes | None = None,
+    public_key: Ed25519PublicKey | None = None,
+    hmac_accept_until: datetime | None = None,
 ) -> TicketClaims:
     """Verify signature + exp + assigned gateway locally. Does not call GET /leases."""
 
-    signing_key = key if key is not None else ticket_hmac_key()
-    payload, body, sig = _parse_token(token)
-    expected = _mac(body, key=signing_key)
-    if not hmac.compare_digest(sig, expected):
-        raise TicketError("bad signature")
-    if int(payload.get("v", 0)) != TICKET_VERSION:
-        raise TicketError("unsupported ticket version")
-    claims = _claims_from_payload(payload)
     clock = now if now is not None else datetime.now(UTC)
     if clock.tzinfo is None:
         clock = clock.replace(tzinfo=UTC)
+    payload, body, sig = _parse_token(token)
+    algorithm = payload.get("alg")
+    if algorithm == "Ed25519":
+        if public_key is None:
+            public_key = Ed25519PublicKey.from_public_bytes(_key_bytes(TICKET_PUBLIC_KEY_ENV))
+        if not isinstance(public_key, Ed25519PublicKey):
+            raise TicketError("Ed25519 public key required")
+        try:
+            public_key.verify(sig, body)
+        except InvalidSignature as exc:
+            raise TicketError("bad signature") from exc
+    elif algorithm is None or algorithm == "HS256":
+        if clock >= _overlap_end(hmac_accept_until):
+            raise TicketError("HMAC overlap ended")
+        signing_key = key if key is not None else ticket_hmac_key()
+        if not hmac.compare_digest(sig, _mac(body, key=signing_key)):
+            raise TicketError("bad signature")
+    else:
+        raise TicketError("unsupported ticket algorithm")
+    if payload.get("v") != TICKET_VERSION:
+        raise TicketError("unsupported ticket version")
+    claims = _claims_from_payload(payload)
     if claims.status != TICKET_STATUS_ACTIVE:
         raise TicketError("ticket is not active")
     if claims.gateway_id != gateway_id:
@@ -309,6 +351,8 @@ def honor_ticket(
     now: datetime | None = None,
     revoked_lease_ids: Collection[uuid.UUID] | Iterable[uuid.UUID] = (),
     key: bytes | None = None,
+    public_key: Ed25519PublicKey | None = None,
+    hmac_accept_until: datetime | None = None,
 ) -> TicketClaims:
     """Router chat gate. Valid unexpired ticket → claims. Else 409 instance not ready."""
 
@@ -319,6 +363,8 @@ def honor_ticket(
             now=now,
             revoked_lease_ids=revoked_lease_ids,
             key=key,
+            public_key=public_key,
+            hmac_accept_until=hmac_accept_until,
         )
     except TicketError as exc:
         raise TicketNotReady() from exc
@@ -329,6 +375,9 @@ __all__ = [
     "TICKET_VERSION",
     "TICKET_PREFIX",
     "TICKET_HMAC_ENV",
+    "TICKET_PRIVATE_KEY_ENV",
+    "TICKET_PUBLIC_KEY_ENV",
+    "TICKET_HMAC_OVERLAP_ENV",
     "TICKET_DEV_ENV",
     "INSTANCE_NOT_READY",
     "TICKET_STATUS_ACTIVE",

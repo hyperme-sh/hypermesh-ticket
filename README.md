@@ -1,6 +1,6 @@
 # hypermesh-ticket
 
-Python library that signs and verifies Hypermesh lease tickets. A ticket is a short HMAC-signed grant (`hm1`, version 1) binding a lease to a tenant, a device, a gateway, and the host WireGuard address the gateway should use. The package name is `hypermesh-ticket`, the import is `hypermesh_ticket`, and this tree is version **0.1.0**. The wire contract is [docs/protocol.md](docs/protocol.md).
+Python library that signs and verifies Hypermesh lease tickets. A ticket is a short signed grant (`hm1`, version 1) binding a lease to a tenant, a device, a gateway, and the host WireGuard address the gateway should use. The package name is `hypermesh-ticket`, the import is `hypermesh_ticket`, and this tree is version **0.1.0**. The wire contract is [docs/protocol.md](docs/protocol.md).
 
 ## Why
 
@@ -10,13 +10,20 @@ A gateway in front of a leased host has to enforce two facts on every chat reque
 
 Import `hypermesh_ticket`. HTTP routes live on the [gateway](https://github.com/hyperme-sh/hypermesh-gateway). Lease records live in the control plane. This library turns claims into a token and a token back into claims.
 
-[Spanopticon](https://github.com/hyperme-sh/spanopticon), the Hypermesh broker, builds a `TicketClaims` for an active lease and calls `issue_ticket`. The gateway later calls `verify_ticket` or `honor_ticket` with the same HMAC-SHA256 key. The key is the environment variable `HYPERMESH_TICKET_HMAC_KEY`, held by the control plane. Pass `key=` when the process should not read the environment. If that variable is unset, a built-in development key is used only when `HYPERMESH_DEV` is set or `FASTAPI_ENV=development`.
+Plane builds `TicketClaims` for an active lease and calls `issue_ticket` with an
+Ed25519 private key. The gateway calls `verify_ticket` or `honor_ticket` with only
+the public key. The signing key never belongs on the gateway.
 
-The token is `hm1.<body>.<signature>`. `body` is the base64url form of canonical JSON (UTF-8, keys sorted, no extra whitespace). `signature` is the base64url form of HMAC-SHA256 over those exact bytes. Base64 padding is removed.
+The token remains `hm1.<body>.<signature>`. The body is canonical UTF-8 JSON and
+the signature covers its exact bytes, including the `alg: Ed25519` marker.
+Both segments use unpadded base64url. Existing marker-free HMAC tickets retain
+their exact bytes and verify only during an explicit overlap; `HS256` is also
+recognized during that overlap. Unknown markers are rejected.
 
 | JSON field | Claim | Meaning |
 | --- | --- | --- |
 | `v` | | `1` |
+| `alg` | | `Ed25519`; legacy absent or `HS256` only within overlap |
 | `lid` | `lease_id` | Lease this grant belongs to |
 | `did` | `device_id` | Host device |
 | `rid` | `gateway_id` | Gateway allowed to honor the ticket |
@@ -29,7 +36,7 @@ The token is `hm1.<body>.<signature>`. `body` is the base64url form of canonical
 
 `service_account`, `service-account`, and `named service account` normalize to `service` before signing.
 
-`verify_ticket` accepts the token when the MAC matches, `v` is 1, the status is `active`, `gateway_id` is the gateway checking the token, the lease id is absent from `revoked_lease_ids`, and `now` is earlier than `exp`. Anything else raises `TicketError` (`bad signature`, `ticket expired`, `ticket revoked`, `ticket is not assigned to this gateway`, and the other reasons in the module). The check is local: it does not call `GET /leases`.
+`verify_ticket` accepts the token when the signature verifies, `v` is 1, the status is `active`, `gateway_id` is the gateway checking the token, the lease id is absent from `revoked_lease_ids`, and `now` is earlier than `exp`. Anything else raises `TicketError` (`bad signature`, `ticket expired`, `ticket revoked`, `ticket is not assigned to this gateway`, and the other reasons in the module). The check is local: it does not call `GET /leases`.
 
 `honor_ticket` is that check for the chat router. On failure it raises `TicketNotReady`, which the gateway maps to HTTP **409** with detail **`instance not ready`**.
 
@@ -40,7 +47,7 @@ Further checks on the verified claims:
 - `require_renter_chat_purpose` accepts `renter` and `service`.
 - `require_ir_chat_purpose` accepts `ir`.
 - `require_ticket_tenant` requires the signed tenant to be the tenant the door resolved.
-- `purpose_from_authorization` reads `purpose` from a [controlplane-identity](https://github.com/hyperme-sh/controlplane-identity) API-key exchange JWT (`Authorization: Bearer …`). That decode is local. `issue_ticket` and `verify_ticket` with an explicit key use the standard library.
+- `purpose_from_authorization` reads `purpose` from a [controlplane-identity](https://github.com/hyperme-sh/controlplane-identity) API-key exchange JWT (`Authorization: Bearer …`). That decode is local. Ed25519 uses the declared `cryptography` dependency.
 - `renter_key_fingerprint` is the SHA-256 hex digest of a renter API key (`prefix.secret`), so a door can compare the presented key locally.
 
 A new incompatible ticket needs its own prefix and signed `v`. A token that starts with `hm2` is rejected as malformed.
@@ -63,7 +70,7 @@ From another project:
 uv add "hypermesh-ticket @ git+https://github.com/hyperme-sh/hypermesh-ticket.git"
 ```
 
-Sign and verify with an explicit key. These claims are the vector in `tests/hm1-vector.json`, and `issue_ticket` reproduces that token byte for byte.
+Sign with a private key and verify with its public key. Generated keys below are for demonstration; production keys are supplied by the owner.
 
 ```python
 import uuid
@@ -80,7 +87,9 @@ from hypermesh_ticket import (
     verify_ticket,
 )
 
-key = b"fixture-only-hm1-signing-key"
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+private_key = Ed25519PrivateKey.generate()
+public_key = private_key.public_key()
 now = datetime(2026, 1, 1, tzinfo=UTC)
 claims = TicketClaims(
     lease_id=uuid.UUID(int=101),
@@ -94,8 +103,8 @@ claims = TicketClaims(
     contract_id=uuid.UUID(int=105),
 )
 
-token = issue_ticket(claims, key=key)
-verified = verify_ticket(token, gateway_id=claims.gateway_id, now=now, key=key)
+token = issue_ticket(claims, private_key=private_key)
+verified = verify_ticket(token, gateway_id=claims.gateway_id, now=now, public_key=public_key)
 assert verified == claims
 assert verified.chat_upstream() == "http://10.77.0.2:8080/v1/chat/completions"
 require_renter_chat_purpose(verified)
@@ -107,7 +116,7 @@ except TicketNotReady as exc:
     assert exc.detail == "instance not ready"
 
 try:
-    honor_ticket(token, gateway_id=uuid.UUID(int=999), now=now, key=key)
+    honor_ticket(token, gateway_id=uuid.UUID(int=999), now=now, public_key=public_key)
 except TicketNotReady as exc:
     assert exc.detail == "instance not ready"
 
@@ -116,7 +125,7 @@ try:
         token,
         gateway_id=claims.gateway_id,
         now=now,
-        key=key,
+        public_key=public_key,
         revoked_lease_ids=[claims.lease_id],
     )
 except TicketError as exc:
@@ -127,19 +136,31 @@ except TicketError as exc:
 uv run python example.py
 ```
 
-To read the key from the environment, export it and omit `key=`:
+Environment configuration uses base64-encoded raw 32-byte keys:
+`HYPERMESH_TICKET_ED25519_PRIVATE_KEY` for the signer and
+`HYPERMESH_TICKET_ED25519_PUBLIC_KEY` for verifiers. Malformed or missing keys
+fail closed. No development signing-key fallback exists.
 
-```sh
-export HYPERMESH_TICKET_HMAC_KEY='fixture-only-hm1-signing-key'
-```
+For independently updated peers, deploy verifier support first and configure
+`HYPERMESH_TICKET_HMAC_ACCEPT_UNTIL` as an absolute ISO-8601 timestamp including
+timezone. Legacy verification additionally needs `HYPERMESH_TICKET_HMAC_KEY`
+(or explicit `key=`). The deadline is mandatory even with explicit keys;
+at or after it, HMAC is rejected. `hmac_accept_until=` supplies the same policy
+programmatically. Remove HMAC credentials after the migration. Before switching
+issuance, confirm all intended verifiers support Ed25519 through the scheduled
+consumer contract. A rollback verifier must retain Ed25519 support while those
+tickets remain valid. Do not extend the overlap automatically.
 
-`HYPERMESH_TICKET_HMAC_KEY` is the signing key. Keep it out of logs, off the event bus, and out of host, renter, and gateway credentials. Set it in any environment that is not a local development configuration.
+Explicit `issue_ticket(..., key=...)` retains the original HMAC bytes for migration.
+Environment issuance prefers Ed25519. An existing HMAC-only signer can continue
+issuing during the configured overlap; missing or expired overlap refuses it.
+An invalid configured Ed25519 private key never falls back to HMAC.
 
 ## How Hypermesh uses it
 
 [Hypermesh](https://hyperme.sh) places an inference lease on a host and a gateway. The control plane assigns the WireGuard peer and the signed lease ticket. [hypermesh-gateway](https://github.com/hyperme-sh/hypermesh-gateway) (`hypermesh-gateway-service` 0.1.0) caches the ticket and applies the peer update. Chat authorization in that service is this library.
 
-Spanopticon calls `issue_ticket` for an active lease. The gateway uses its `hm_gw_` credential when it talks to the control plane to learn assignments. That credential is a gateway API key. The HMAC key that signs the ticket is `HYPERMESH_TICKET_HMAC_KEY`. A renter API key is a third value, compared locally with `renter_key_fingerprint`.
+Spanopticon calls `issue_ticket` for an active lease. The gateway uses its `hm_gw_` credential when it talks to the control plane to learn assignments. That credential is a gateway API key. The private Ed25519 key signs tickets; the gateway receives only its public key. A renter API key is a third value, compared locally with `renter_key_fingerprint`.
 
 On the chat path the gateway calls `honor_ticket` with its gateway id, the clock, and the lease ids it currently treats as revoked. A valid ticket yields claims, and the gateway proxies the completion to `claims.chat_upstream()`: the host listening on that WireGuard address at port 8080. For peer `10.77.0.2/32` the URL is `http://10.77.0.2:8080/v1/chat/completions`. The ticket carries the peer address. WireGuard key material stays in the host and gateway configuration.
 

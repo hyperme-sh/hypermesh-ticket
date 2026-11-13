@@ -35,7 +35,7 @@ def test_previous_broker_ticket_verifies_and_issues_identical_bytes():
     assert TICKET_VERSION == 1
     assert issue_ticket(claims, key=KEY) == VECTOR["token"]
     assert (
-        verify_ticket(VECTOR["token"], gateway_id=claims.gateway_id, now=NOW, key=KEY)
+        verify_ticket(VECTOR["token"], gateway_id=claims.gateway_id, now=NOW, key=KEY, hmac_accept_until=datetime(2031, 1, 1, tzinfo=UTC))
         == claims
     )
 
@@ -50,7 +50,7 @@ def test_previous_broker_ticket_verifies_and_issues_identical_bytes():
     ],
 )
 def test_existing_wire_ticket_keeps_rejection_rules(kwargs):
-    arguments = {"gateway_id": uuid.UUID(int=103), "now": NOW, "key": KEY} | kwargs
+    arguments = {"gateway_id": uuid.UUID(int=103), "now": NOW, "key": KEY, "hmac_accept_until": datetime(2031, 1, 1, tzinfo=UTC)} | kwargs
     with pytest.raises(TicketError):
         verify_ticket(VECTOR["token"], **arguments)
     with pytest.raises(TicketNotReady):
@@ -60,4 +60,4 @@ def test_existing_wire_ticket_keeps_rejection_rules(kwargs):
 def test_future_wire_prefix_is_rejected():
     token = VECTOR["token"].replace("hm1.", "hm2.", 1)
     with pytest.raises(TicketError, match="malformed"):
-        verify_ticket(token, gateway_id=uuid.UUID(int=103), now=NOW, key=KEY)
+        verify_ticket(token, gateway_id=uuid.UUID(int=103), now=NOW, key=KEY, hmac_accept_until=datetime(2031, 1, 1, tzinfo=UTC))

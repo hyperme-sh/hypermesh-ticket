@@ -9,7 +9,7 @@ requires-python = ">=3.13"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 description = "Versioned Hypermesh family lease ticket protocol"
-dependencies = ["controlplane-identity @ git+https://github.com/hyperme-sh/controlplane-identity.git@5aeff3d2c00568f39ca6e8b75c7e63883d3a510b"]
+dependencies = ["cryptography>=44.0.0", "controlplane-identity @ git+https://github.com/hyperme-sh/controlplane-identity.git@5aeff3d2c00568f39ca6e8b75c7e63883d3a510b"]
 
 [dependency-groups]
 dev = ["pytest>=8.4.0"]

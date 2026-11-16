@@ -59,15 +59,15 @@ Python 3.13 or newer. The declared dependency is `controlplane-identity` 0.15.0 
 From a checkout, with [uv](https://docs.astral.sh/uv/) 0.11.26:
 
 ```sh
-git clone https://github.com/hyperme-sh/hypermesh-ticket.git
-cd hypermesh-ticket
+git clone https://github.com/hyperme-sh/ticket.git
+cd ticket
 uv sync --frozen
 ```
 
 From another project:
 
 ```sh
-uv add "hypermesh-ticket @ git+https://github.com/hyperme-sh/hypermesh-ticket.git"
+uv add "hypermesh-ticket @ git+https://github.com/hyperme-sh/ticket.git"
 ```
 
 Sign with a private key and verify with its public key. Generated keys below are for demonstration; production keys are supplied by the owner.

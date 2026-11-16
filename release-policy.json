@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "repository": "hyperme-sh/hypermesh-ticket",
+  "repository": "hyperme-sh/ticket",
   "component": "hypermesh-ticket",
   "line": "0.1",
   "version_files": [
